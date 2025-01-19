@@ -66,14 +66,16 @@ namespace LetThemYap
             Oracle.OracleID oracleID = null;
             string textSaying = "";
             string region = "";
+            bool isEchoHere = false;
             SlugcatStats.Name slugName = null;
 
             On.HUD.DialogBox.InitNextMessage += (orig, self) =>
             {
                 //create random variable
                 Random rnd = new Random();
-                //Is the text not 3 dots?
-                if(textSaying != "..." && textSaying != ". . .")
+
+                //Is the text not 3 dots and an echo is not here?
+                if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && !isEchoHere)
                 {
                     //Are we Saint, in Rubicon and is More Slugcats on?
                     if(ModManager.MSC && (region == "HR" && slugName == MoreSlugcatsEnums.SlugcatStatsName.Saint))
@@ -132,6 +134,13 @@ namespace LetThemYap
                 slugName = self.room.world.game.StoryCharacter;
                 orig(self);
             };
+
+            On.Ghost.ThightSprite += (orig, self, someNumber) =>
+            {
+                isEchoHere = self.room.ViewedByAnyCamera(self.pos, 100f);
+                return orig(self, someNumber);
+            };
+
 
             //Here to get the current text
             On.HUD.DialogBox.NewMessage_string_float_float_int  += (orig, self, text, xOrien, yPos, extra) =>
