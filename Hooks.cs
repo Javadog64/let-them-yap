@@ -75,7 +75,7 @@ namespace LetThemYap
                 Random rnd = new Random();
 
                 //Is the text not 3 dots and an echo is not here?
-                if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && !isEchoHere)
+                if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  ." && !isEchoHere)
                 {
                     //Are we Saint, in Rubicon and is More Slugcats on?
                     if(ModManager.MSC && (region == "HR" && slugName == MoreSlugcatsEnums.SlugcatStatsName.Saint))
