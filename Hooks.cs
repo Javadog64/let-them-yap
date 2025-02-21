@@ -11,7 +11,7 @@ namespace LetThemYap
 {
     internal class Hooks
     {
-        
+        bool isProtesting = false;
         //Choose randomly between 5 of Pebble's lines then play them
         private static void playPebblesAudio(HUD.DialogBox self, Random rnd)
         {
@@ -37,27 +37,54 @@ namespace LetThemYap
         }
         
         //Choose randomly between 5 of Moon's lines then play them
-        private static void playMoonAudio(HUD.DialogBox self, Random rnd)
+        private static void playMoonAudio(HUD.DialogBox self, Random rnd, bool isProtest)
         {
-            switch (rnd.Next(0, 5))
-            {
-                case 0:
-                    self.hud.PlaySound(SoundID.SL_AI_Talk_1);
-                    break;
-                case 1:
-                    self.hud.PlaySound(SoundID.SL_AI_Talk_2);
-                    break;
-                case 2:
-                    self.hud.PlaySound(SoundID.SL_AI_Talk_3);
-                    break;
-                case 3:
-                    self.hud.PlaySound(SoundID.SL_AI_Talk_4);
-                    break;
-                case 4:
-                    self.hud.PlaySound(SoundID.SL_AI_Talk_5);
-                    break;
 
+            if (!isProtest)
+            {
+                switch (rnd.Next(0, 5))
+                {
+                    case 0:
+                        self.hud.PlaySound(SoundID.SL_AI_Talk_1);
+                        break;
+                    case 1:
+                        self.hud.PlaySound(SoundID.SL_AI_Talk_2);
+                        break;
+                    case 2:
+                        self.hud.PlaySound(SoundID.SL_AI_Talk_3);
+                        break;
+                    case 3:
+                        self.hud.PlaySound(SoundID.SL_AI_Talk_4);
+                        break;
+                    case 4:
+                        self.hud.PlaySound(SoundID.SL_AI_Talk_5);
+                        break;
+
+                }
+            } else
+            {
+                switch (rnd.Next(0, 5))
+                {
+                    case 0:
+                        self.hud.PlaySound(SoundID.SL_AI_Protest_1);
+                        break;
+                    case 1:
+                        self.hud.PlaySound(SoundID.SL_AI_Protest_2);
+                        break;
+                    case 2:
+                        self.hud.PlaySound(SoundID.SL_AI_Protest_3);
+                        break;
+                    case 3:
+                        self.hud.PlaySound(SoundID.SL_AI_Protest_4);
+                        break;
+                    case 4:
+                        self.hud.PlaySound(SoundID.SL_AI_Protest_5);
+                        break;
+
+                }
             }
+            
+           
         }
 
         public static void Apply()
@@ -67,6 +94,8 @@ namespace LetThemYap
             string textSaying = "";
             string region = "";
             bool isEchoHere = false;
+            bool isProtesting = false;
+            
             SlugcatStats.Name slugName = null;
 
             On.HUD.DialogBox.InitNextMessage += (orig, self) =>
@@ -83,7 +112,7 @@ namespace LetThemYap
                         //Is moon talking when both of them are ascended or is it just moon?
                         if (textSaying.StartsWith("BSM:") || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM  && !textSaying.StartsWith("FP:")))
                         {
-                            playMoonAudio(self, rnd);
+                            playMoonAudio(self, rnd, false);
                         }
                         //Is pebbles talking when both of them are ascended or is it just pebbles?
                         else if (textSaying.StartsWith("FP:") || oracleID == Oracle.OracleID.SS)
@@ -94,7 +123,7 @@ namespace LetThemYap
                     //Is it shoreline moon thats talking or is it Spearmaster moon?
                     else if (oracleID == Oracle.OracleID.SL || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM))
                     {
-                        playMoonAudio(self, rnd);
+                        playMoonAudio(self, rnd, isProtesting);
                     }
                     //Is Five Pebbles talking?
                     else if (oracleID == Oracle.OracleID.SS)
@@ -147,6 +176,18 @@ namespace LetThemYap
             {
                 textSaying = text;
                 orig(self,text,xOrien,yPos, extra);
+            };
+
+            On.SLOracleBehaviorHasMark.InterruptPlayerHoldNeuron += (orig, self) =>
+            {
+                isProtesting = true;
+                orig(self);
+            };
+
+            On.SLOracleBehaviorHasMark.PlayerReleaseNeuron += (orig, self) =>
+            {
+                isProtesting = false;
+                orig(self);
             };
 
 
