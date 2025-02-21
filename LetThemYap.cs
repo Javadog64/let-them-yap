@@ -17,7 +17,7 @@ using System.Media;
 
 namespace LetThemYap;
 
-[BepInPlugin("javadog.iteryap", "Let Them Yap", "1.0.0")]
+[BepInPlugin("javadog.iteryap", "Let Them Yap", "1.0.1")]
 public partial class LetThemYap : BaseUnityPlugin
 {
     private void OnEnable()

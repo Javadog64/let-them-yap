@@ -1,7 +1,7 @@
 {
   "id": "javadog.iteryap",
   "name": "Let Them Yap",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "authors": "Javadog",
   "description": "Lets iterators speak when talking to Slugcat with a mark.",
   "requirements": [ "willowwisp.audiofix" ],
