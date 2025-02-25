@@ -11,7 +11,8 @@ namespace LetThemYap
 {
     internal class Hooks
     {
-        bool isProtesting = false;
+        bool testblah = false;
+
         //Choose randomly between 5 of Pebble's lines then play them
         private static void playPebblesAudio(HUD.DialogBox self, Random rnd)
         {
@@ -87,6 +88,7 @@ namespace LetThemYap
            
         }
 
+
         public static void Apply()
         {
             //set variables
@@ -94,14 +96,24 @@ namespace LetThemYap
             string textSaying = "";
             string region = "";
             bool isEchoHere = false;
-            bool isProtesting = false;
-            
+            SLOracleBehaviorHasMark moon = null;   
             SlugcatStats.Name slugName = null;
+            bool moonAngry = false;
+
+
 
             On.HUD.DialogBox.InitNextMessage += (orig, self) =>
             {
                 //create random variable
                 Random rnd = new Random();
+
+                if(moon.playerHoldingNeuronNoConvo || moon.pauseReason == SLOracleBehaviorHasMark.PauseReason.GrabNeuron)
+                {
+                    moonAngry = true;
+                } else 
+                { 
+                    moonAngry = false;
+                }
 
                 //Is the text not 3 dots and an echo is not here?
                 if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  ." && !isEchoHere)
@@ -123,7 +135,7 @@ namespace LetThemYap
                     //Is it shoreline moon thats talking or is it Spearmaster moon?
                     else if (oracleID == Oracle.OracleID.SL || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM))
                     {
-                        playMoonAudio(self, rnd, isProtesting);
+                        playMoonAudio(self, rnd, moonAngry);
                     }
                     //Is Five Pebbles talking?
                     else if (oracleID == Oracle.OracleID.SS)
@@ -178,19 +190,11 @@ namespace LetThemYap
                 orig(self,text,xOrien,yPos, extra);
             };
 
-            On.SLOracleBehaviorHasMark.InterruptPlayerHoldNeuron += (orig, self) =>
+            On.SLOracleBehaviorHasMark.Update += (orig, self, wh) =>
             {
-                isProtesting = true;
-                orig(self);
+                moon = self;
+                orig(self, wh);
             };
-
-            On.SLOracleBehaviorHasMark.PlayerReleaseNeuron += (orig, self) =>
-            {
-                isProtesting = false;
-                orig(self);
-            };
-
-
             
         }
 
