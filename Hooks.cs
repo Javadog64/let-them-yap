@@ -11,7 +11,6 @@ namespace LetThemYap
 {
     internal class Hooks
     {
-        bool testblah = false;
 
         //Choose randomly between 5 of Pebble's lines then play them
         private static void playPebblesAudio(HUD.DialogBox self, Random rnd)
@@ -107,13 +106,7 @@ namespace LetThemYap
                 //create random variable
                 Random rnd = new Random();
 
-                if(moon.playerHoldingNeuronNoConvo || moon.pauseReason == SLOracleBehaviorHasMark.PauseReason.GrabNeuron)
-                {
-                    moonAngry = true;
-                } else 
-                { 
-                    moonAngry = false;
-                }
+                UnityEngine.Debug.Log(isEchoHere);
 
                 //Is the text not 3 dots and an echo is not here?
                 if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  ." && !isEchoHere)
@@ -135,6 +128,15 @@ namespace LetThemYap
                     //Is it shoreline moon thats talking or is it Spearmaster moon?
                     else if (oracleID == Oracle.OracleID.SL || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM))
                     {
+                        if (moon.playerHoldingNeuronNoConvo || moon.pauseReason == SLOracleBehaviorHasMark.PauseReason.GrabNeuron)
+                        {
+                            moonAngry = true;
+                        }
+                        else
+                        {
+                            moonAngry = false;
+                        }
+
                         playMoonAudio(self, rnd, moonAngry);
                     }
                     //Is Five Pebbles talking?
