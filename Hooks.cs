@@ -125,8 +125,8 @@ namespace LetThemYap
                             playPebblesAudio(self, rnd);
                         }
                     }
-                    //Is it shoreline moon thats talking or is it Spearmaster moon?
-                    else if (oracleID == Oracle.OracleID.SL || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM))
+                    //Is it shoreline moon?
+                    else if (oracleID == Oracle.OracleID.SL)
                     {
                         if (moon.playerHoldingNeuronNoConvo || moon.pauseReason == SLOracleBehaviorHasMark.PauseReason.GrabNeuron)
                         {
@@ -138,6 +138,10 @@ namespace LetThemYap
                         }
 
                         playMoonAudio(self, rnd, moonAngry);
+                    // Is it Spearmaster moon?
+                    } else if (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM)
+                    {
+                        playMoonAudio(self, rnd, false);
                     }
                     //Is Five Pebbles talking?
                     else if (oracleID == Oracle.OracleID.SS)
