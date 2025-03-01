@@ -171,10 +171,11 @@ namespace LetThemYap
 
 
                     }
-                    //MODDED Is Chasing Wind talking?
-                    else if (ModManager.ActiveMods.Any(mod => mod.id == "myr.chasing_wind"))
+                    //MODDED Is a Custom Iterator talking?
+                    //Is Chasing Wind talking?
+                    if (ModManager.ActiveMods.Any(mod => mod.id == "myr.chasing_wind"))
                     {
-                        ChasingWindYap.playChasingWindAudio(self, rnd);
+                        ChasingWindYap.playChasingWindAudio(self, rnd, oracleID);
                     }
                 }
                 
