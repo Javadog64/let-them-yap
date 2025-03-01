@@ -87,6 +87,10 @@ namespace LetThemYap
            
         }
 
+        
+
+
+
 
         public static void Apply()
         {
@@ -106,7 +110,6 @@ namespace LetThemYap
                 //create random variable
                 Random rnd = new Random();
 
-                UnityEngine.Debug.Log(isEchoHere);
 
                 //Is the text not 3 dots and an echo is not here?
                 if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  ." && !isEchoHere)
@@ -138,8 +141,9 @@ namespace LetThemYap
                         }
 
                         playMoonAudio(self, rnd, moonAngry);
+                    }
                     // Is it Spearmaster moon?
-                    } else if (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM)
+                    else if (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM)
                     {
                         playMoonAudio(self, rnd, false);
                     }
@@ -166,6 +170,11 @@ namespace LetThemYap
 
 
 
+                    }
+                    //MODDED Is Chasing Wind talking?
+                    else if (ModManager.ActiveMods.Any(mod => mod.id == "myr.chasing_wind"))
+                    {
+                        ChasingWindYap.playChasingWindAudio(self, rnd);
                     }
                 }
                 
