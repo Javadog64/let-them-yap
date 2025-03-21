@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonoMod.Utils;
 
 namespace LetThemYap
 {
@@ -110,7 +111,6 @@ namespace LetThemYap
                 //create random variable
                 Random rnd = new Random();
 
-
                 //Is the text not 3 dots and an echo is not here?
                 if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  ." && !isEchoHere)
                 {
@@ -192,12 +192,17 @@ namespace LetThemYap
                 orig(self);
             };
 
-            On.Ghost.ThightSprite += (orig, self, someNumber) =>
+            On.Ghost.StartConversation += (orig, self) =>
             {
-                isEchoHere = self.room.ViewedByAnyCamera(self.pos, 100f);
-                return orig(self, someNumber);
+                isEchoHere = true;
+                orig(self);
             };
 
+            On.RainWorldGame.ctor += (orig, self, manager) =>
+            {
+                isEchoHere = false;
+                orig(self, manager);
+            };
 
             //Here to get the current text
             On.HUD.DialogBox.NewMessage_string_float_float_int  += (orig, self, text, xOrien, yPos, extra) =>
