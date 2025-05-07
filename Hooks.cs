@@ -97,6 +97,7 @@ namespace LetThemYap
         {
             //set variables
             Oracle.OracleID oracleID = null;
+            Oracle oracle = null;
             string textSaying = "";
             string region = "";
             bool isEchoHere = false;
@@ -111,6 +112,7 @@ namespace LetThemYap
                 //create random variable
                 Random rnd = new Random();
 
+                UnityEngine.Debug.Log(oracleID);
                 //Is the text not 3 dots and an echo is not here?
                 if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  ." && !isEchoHere)
                 {
@@ -177,6 +179,11 @@ namespace LetThemYap
                     {
                         ChasingWindYap.playChasingWindAudio(self, rnd, oracleID);
                     }
+                    //Is Chasing Wind talking?
+                    if (ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
+                    {
+                        NSHYap.playNSHAudio(self, rnd, oracleID);
+                    }
                 }
                 
                 
@@ -184,12 +191,12 @@ namespace LetThemYap
             };
 
             //Here to get the ID, region, and slugcatname
-            On.Oracle.InitiateGraphicsModule += (orig, self) =>
+            On.Oracle.ctor += (orig, self, abstractPhysObj, room) =>
             {
+                orig(self, abstractPhysObj, room);
                 oracleID = self.ID;
                 region = self.room.world.name;
                 slugName = self.room.world.game.StoryCharacter;
-                orig(self);
             };
 
             On.Ghost.StartConversation += (orig, self) =>
@@ -216,7 +223,8 @@ namespace LetThemYap
                 moon = self;
                 orig(self, wh);
             };
-            
+
+
         }
 
         
