@@ -97,7 +97,6 @@ namespace LetThemYap
         {
             //set variables
             Oracle.OracleID oracleID = null;
-            Oracle oracle = null;
             string textSaying = "";
             string region = "";
             bool isEchoHere = false;
@@ -128,6 +127,12 @@ namespace LetThemYap
                         else if (textSaying.StartsWith("FP:") || oracleID == Oracle.OracleID.SS)
                         {
                             playPebblesAudio(self, rnd);
+                        }
+                        //MODDED
+                        //Is NSH talking?
+                        else if (textSaying.StartsWith("NSH:") && ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
+                        {
+                            NSHYap.playNSHAudio(self, rnd, oracleID, textSaying, slugName, region);
                         }
                     }
                     //Is it shoreline moon?
@@ -175,14 +180,14 @@ namespace LetThemYap
                     }
                     //MODDED Is a Custom Iterator talking?
                     //Is Chasing Wind talking?
-                    if (ModManager.ActiveMods.Any(mod => mod.id == "myr.chasing_wind"))
+                    else if (ModManager.ActiveMods.Any(mod => mod.id == "myr.chasing_wind"))
                     {
                         ChasingWindYap.playChasingWindAudio(self, rnd, oracleID);
                     }
                     //Is Chasing Wind talking?
-                    if (ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
+                     else if (ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
                     {
-                        NSHYap.playNSHAudio(self, rnd, oracleID);
+                        NSHYap.playNSHAudio(self, rnd, oracleID, textSaying, slugName, region);
                     }
                 }
                 

@@ -30,9 +30,6 @@
     <Reference Include="CWStuff">
       <HintPath>lib\CWStuff.dll</HintPath>
     </Reference>
-    <Reference Include="EmgTx">
-      <HintPath>lib\EmgTx.dll</HintPath>
-    </Reference>
     <Reference Include="GoKit">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\Managed\GoKit.dll</HintPath>
     </Reference>
