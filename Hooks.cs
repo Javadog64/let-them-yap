@@ -111,7 +111,6 @@ namespace LetThemYap
                 //create random variable
                 Random rnd = new Random();
 
-                UnityEngine.Debug.Log(oracleID);
                 //Is the text not 3 dots and an echo is not here?
                 if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  ." && !isEchoHere)
                 {
