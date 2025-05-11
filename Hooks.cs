@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MonoMod.Utils;
+using Watcher;
 
 namespace LetThemYap
 {
@@ -103,6 +104,7 @@ namespace LetThemYap
             SLOracleBehaviorHasMark moon = null;   
             SlugcatStats.Name slugName = null;
             bool moonAngry = false;
+            Ghost echo = null;
 
 
 
@@ -112,13 +114,17 @@ namespace LetThemYap
                 Random rnd = new Random();
 
                 //Is the text not 3 dots and an echo is not here?
-                if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  ." && !isEchoHere)
+                if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  .")
                 {
+                    if (isEchoHere && echo is not SpinningTop)
+                    {
+                        self.hud.PlaySound(Sounds.EchoYapSounds);
+                    }
                     //Are we Saint, in Rubicon and is More Slugcats on?
-                    if(ModManager.MSC && (region == "HR" && slugName == MoreSlugcatsEnums.SlugcatStatsName.Saint))
+                    else if (ModManager.MSC && (region == "HR" && slugName == MoreSlugcatsEnums.SlugcatStatsName.Saint))
                     {
                         //Is moon talking when both of them are ascended or is it just moon?
-                        if (textSaying.StartsWith("BSM:") || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM  && !textSaying.StartsWith("FP:")))
+                        if (textSaying.StartsWith("BSM:") || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM && !textSaying.StartsWith("FP:")))
                         {
                             playMoonAudio(self, rnd, false);
                         }
@@ -184,7 +190,7 @@ namespace LetThemYap
                         ChasingWindYap.playChasingWindAudio(self, rnd, oracleID);
                     }
                     //Is Chasing Wind talking?
-                     else if (ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
+                    else if (ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
                     {
                         NSHYap.playNSHAudio(self, rnd, oracleID, textSaying, slugName, region);
                     }
@@ -203,10 +209,11 @@ namespace LetThemYap
                 slugName = self.room.world.game.StoryCharacter;
             };
 
-            On.Ghost.StartConversation += (orig, self) =>
+            On.GhostConversation.ctor += (orig, self, id, ghost, diaBox) =>
             {
                 isEchoHere = true;
-                orig(self);
+                echo = ghost;
+                orig(self, id, ghost, diaBox);
             };
 
             On.RainWorldGame.ctor += (orig, self, manager) =>

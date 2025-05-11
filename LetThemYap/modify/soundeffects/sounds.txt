@@ -1,3 +1,4 @@
 [ADD]CL_Speak1 : CLSpeak1/vol=0.5/pitch=1
 [ADD]CL_Speak2 : CLSpeak2/vol=0.5/pitch=1
 [ADD]CL_Speak3 : CLSpeak3/vol=0.5/pitch=1
+[ADD]EchoYap : Echo1/vol=0.7/pitch=1, Echo2/vol=0.7/pitch=1, Echo3/vol=0.7/pitch=1, Echo4/vol=0.7/pitch=1
