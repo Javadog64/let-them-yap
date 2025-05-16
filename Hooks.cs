@@ -8,11 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using MonoMod.Utils;
 using Watcher;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using BepInEx;
+using BepInEx.Logging;
 
 namespace LetThemYap
 {
     internal class Hooks
     {
+        //public static ManualLogSource Logger;
+
 
         //Choose randomly between 5 of Pebble's lines then play them
         private static void playPebblesAudio(HUD.DialogBox self, Random rnd)
@@ -89,7 +95,7 @@ namespace LetThemYap
            
         }
 
-        
+
 
 
 
@@ -105,6 +111,7 @@ namespace LetThemYap
             SlugcatStats.Name slugName = null;
             bool moonAngry = false;
             Ghost echo = null;
+            HUD.Map.MapType test = HUD.Map.MapType.WarpLinks;
 
 
 
@@ -235,10 +242,33 @@ namespace LetThemYap
                 orig(self, wh);
             };
 
+            IL.Watcher.SpinningTop.SpinningTopConversation.Update += Watcher_SpinningTop_SpinningTopConversation_Update;
+
 
         }
 
-        
+        private static void Watcher_SpinningTop_SpinningTopConversation_Update(ILContext il)
+        {
+            try
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                    MoveType.After,
+                    x => x.MatchLdarg(0),
+                    x => x.MatchLdfld<Watcher.SpinningTop.SpinningTopConversation>(nameof(Watcher.SpinningTop.SpinningTopConversation.timeSinceLastSound)),
+                    x => x.MatchLdcI4(120)
+                    );
+                c.MoveAfterLabels();
+                c.Index--;
+                c.Next.Operand = 1;
+                //c.Emit(OpCodes.Nop);
+                //UnityEngine.Debug.Log(il);
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.Log(e);
+            }
+        }
 
 
     }

@@ -7,8 +7,7 @@ using System.Security.Permissions;
 using UnityEngine;
 using RWCustom;
 using BepInEx;
-using Debug = UnityEngine.Debug;
-using System.Media;
+
 
 #pragma warning disable CS0618
 
@@ -17,7 +16,7 @@ using System.Media;
 
 namespace LetThemYap;
 
-[BepInPlugin("javadog.iteryap", "Let Them Yap", "1.2.0")]
+[BepInPlugin("javadog.iteryap", "Let Them Yap", "1.2.1")]
 public partial class LetThemYap : BaseUnityPlugin
 {
     private void OnEnable()
@@ -36,7 +35,7 @@ public partial class LetThemYap : BaseUnityPlugin
             //Your hooks go here
             Hooks.Apply();
             Sounds.Initialize();
-
+            
             On.RainWorldGame.ShutDownProcess += RainWorldGameOnShutDownProcess;
             On.GameSession.ctor += GameSessionOnctor;
             
