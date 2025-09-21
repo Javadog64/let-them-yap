@@ -12,13 +12,22 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using BepInEx;
 using BepInEx.Logging;
+using HUD;
 
 namespace LetThemYap
 {
     internal class Hooks
     {
         //public static ManualLogSource Logger;
-
+        //set variables
+        private static Oracle.OracleID oracleID = null;
+        private static string textSaying = "";
+        private static string region = "";
+        private static bool isEchoHere = false;
+        private static SLOracleBehaviorHasMark moon = null;
+        private static SlugcatStats.Name slugName = null;
+        private static bool moonAngry = false;
+        private static Ghost echo = null;
 
         //Choose randomly between 5 of Pebble's lines then play them
         private static void playPebblesAudio(HUD.DialogBox self, Random rnd)
@@ -102,150 +111,150 @@ namespace LetThemYap
 
         public static void Apply()
         {
-            //set variables
-            Oracle.OracleID oracleID = null;
-            string textSaying = "";
-            string region = "";
-            bool isEchoHere = false;
-            SLOracleBehaviorHasMark moon = null;   
-            SlugcatStats.Name slugName = null;
-            bool moonAngry = false;
-            Ghost echo = null;
-            HUD.Map.MapType test = HUD.Map.MapType.WarpLinks;
 
 
-
-            On.HUD.DialogBox.InitNextMessage += (orig, self) =>
-            {
-                //create random variable
-                Random rnd = new Random();
-
-                //Is the text not 3 dots and an echo is not here?
-                if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying !=".  .  .")
-                {
-                    if (isEchoHere && echo is not SpinningTop)
-                    {
-                        self.hud.PlaySound(Sounds.EchoYapSounds);
-                    }
-                    //Are we Saint, in Rubicon and is More Slugcats on?
-                    else if (ModManager.MSC && (region == "HR" && slugName == MoreSlugcatsEnums.SlugcatStatsName.Saint))
-                    {
-                        //Is moon talking when both of them are ascended or is it just moon?
-                        if (textSaying.StartsWith("BSM:") || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM && !textSaying.StartsWith("FP:")))
-                        {
-                            playMoonAudio(self, rnd, false);
-                        }
-                        //Is pebbles talking when both of them are ascended or is it just pebbles?
-                        else if (textSaying.StartsWith("FP:") || oracleID == Oracle.OracleID.SS)
-                        {
-                            playPebblesAudio(self, rnd);
-                        }
-                        //MODDED
-                        //Is NSH talking?
-                        else if (textSaying.StartsWith("NSH:") && ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
-                        {
-                            NSHYap.playNSHAudio(self, rnd, oracleID, textSaying, slugName, region);
-                        }
-                    }
-                    //Is it shoreline moon?
-                    else if (oracleID == Oracle.OracleID.SL)
-                    {
-                        if (moon.playerHoldingNeuronNoConvo || moon.pauseReason == SLOracleBehaviorHasMark.PauseReason.GrabNeuron)
-                        {
-                            moonAngry = true;
-                        }
-                        else
-                        {
-                            moonAngry = false;
-                        }
-
-                        playMoonAudio(self, rnd, moonAngry);
-                    }
-                    // Is it Spearmaster moon?
-                    else if (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM)
-                    {
-                        playMoonAudio(self, rnd, false);
-                    }
-                    //Is Five Pebbles talking?
-                    else if (oracleID == Oracle.OracleID.SS)
-                    {
-                        playPebblesAudio(self, rnd);
-                    }
-                    //Is More Slugcats on and is it Saint Pebbles?
-                    else if (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.CL)
-                    {
-                        switch (rnd.Next(0, 3))
-                        {
-                            case 0:
-                                self.hud.PlaySound(Sounds.CLSpeak1);
-                                break;
-                            case 1:
-                                self.hud.PlaySound(Sounds.CLSpeak2);
-                                break;
-                            case 2:
-                                self.hud.PlaySound(Sounds.CLSpeak3);
-                                break;
-                        }
-
-
-
-                    }
-                    //MODDED Is a Custom Iterator talking?
-                    //Is Chasing Wind talking?
-                    else if (ModManager.ActiveMods.Any(mod => mod.id == "myr.chasing_wind"))
-                    {
-                        ChasingWindYap.playChasingWindAudio(self, rnd, oracleID);
-                    }
-                    //Is Chasing Wind talking?
-                    else if (ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
-                    {
-                        NSHYap.playNSHAudio(self, rnd, oracleID, textSaying, slugName, region);
-                    }
-                }
-                
-                
-                orig(self);
-            };
-
-            //Here to get the ID, region, and slugcatname
-            On.Oracle.ctor += (orig, self, abstractPhysObj, room) =>
-            {
-                orig(self, abstractPhysObj, room);
-                oracleID = self.ID;
-                region = self.room.world.name;
-                slugName = self.room.world.game.StoryCharacter;
-            };
-
-            On.GhostConversation.ctor += (orig, self, id, ghost, diaBox) =>
-            {
-                isEchoHere = true;
-                echo = ghost;
-                orig(self, id, ghost, diaBox);
-            };
-
-            On.RainWorldGame.ctor += (orig, self, manager) =>
-            {
-                isEchoHere = false;
-                orig(self, manager);
-            };
-
-            //Here to get the current text
-            On.HUD.DialogBox.NewMessage_string_float_float_int  += (orig, self, text, xOrien, yPos, extra) =>
-            {
-                textSaying = text;
-                orig(self,text,xOrien,yPos, extra);
-            };
-
-            On.SLOracleBehaviorHasMark.Update += (orig, self, wh) =>
-            {
-                moon = self;
-                orig(self, wh);
-            };
-
+            On.HUD.DialogBox.InitNextMessage += HUD_DialogBox_InitNextMessage;
+            On.Oracle.ctor += Oracle_ctor;
+            On.GhostConversation.ctor += GhostConversation_ctor;
+            On.RainWorldGame.ctor += RainWorldGame_ctor;
+            On.HUD.DialogBox.NewMessage_string_float_float_int += HUD_DialogBox_NewMessage_string_float_float_int;
+            On.SLOracleBehaviorHasMark.Update += SLOracleBehaviorHasMark_Update;
             IL.Watcher.SpinningTop.SpinningTopConversation.Update += Watcher_SpinningTop_SpinningTopConversation_Update;
 
 
         }
+
+        private static void HUD_DialogBox_InitNextMessage(On.HUD.DialogBox.orig_InitNextMessage orig, DialogBox self)
+        {
+            //create random variable
+            Random rnd = new Random();
+
+            //Is the text not 3 dots and an echo is not here?
+            if (textSaying != "..." && textSaying != ". . ." && textSaying != " . . . " && textSaying != ".  .  .")
+            {
+                if (isEchoHere && echo is not SpinningTop)
+                {
+                    self.hud.PlaySound(Sounds.EchoYapSounds);
+                }
+                //Are we Saint, in Rubicon and is More Slugcats on?
+                else if (ModManager.MSC && (region == "HR" && slugName == MoreSlugcatsEnums.SlugcatStatsName.Saint))
+                {
+                    //Is moon talking when both of them are ascended or is it just moon?
+                    if (textSaying.StartsWith("BSM:") || (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM && !textSaying.StartsWith("FP:")))
+                    {
+                        playMoonAudio(self, rnd, false);
+                    }
+                    //Is pebbles talking when both of them are ascended or is it just pebbles?
+                    else if (textSaying.StartsWith("FP:") || oracleID == Oracle.OracleID.SS)
+                    {
+                        playPebblesAudio(self, rnd);
+                    }
+                    //MODDED
+                    //Is NSH talking?
+                    else if (textSaying.StartsWith("NSH:") && ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
+                    {
+                        NSHYap.playNSHAudio(self, rnd, oracleID, textSaying, slugName, region);
+                    }
+                }
+                //Is it shoreline moon?
+                else if (oracleID == Oracle.OracleID.SL)
+                {
+                    if (moon.playerHoldingNeuronNoConvo || moon.pauseReason == SLOracleBehaviorHasMark.PauseReason.GrabNeuron)
+                    {
+                        moonAngry = true;
+                    }
+                    else
+                    {
+                        moonAngry = false;
+                    }
+
+                    playMoonAudio(self, rnd, moonAngry);
+                }
+                // Is it Spearmaster moon?
+                else if (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.DM)
+                {
+                    playMoonAudio(self, rnd, false);
+                }
+                //Is Five Pebbles talking?
+                else if (oracleID == Oracle.OracleID.SS)
+                {
+                    playPebblesAudio(self, rnd);
+                }
+                //Is More Slugcats on and is it Saint Pebbles?
+                else if (ModManager.MSC && oracleID == MoreSlugcatsEnums.OracleID.CL)
+                {
+                    switch (rnd.Next(0, 3))
+                    {
+                        case 0:
+                            self.hud.PlaySound(Sounds.CLSpeak1);
+                            break;
+                        case 1:
+                            self.hud.PlaySound(Sounds.CLSpeak2);
+                            break;
+                        case 2:
+                            self.hud.PlaySound(Sounds.CLSpeak3);
+                            break;
+                    }
+
+
+
+                }
+                //MODDED Is a Custom Iterator talking?
+                //Is Chasing Wind talking?
+                else if (ModManager.ActiveMods.Any(mod => mod.id == "myr.chasing_wind"))
+                {
+                    ChasingWindYap.playChasingWindAudio(self, rnd, oracleID);
+                }
+                //Is Chasing Wind talking?
+                else if (ModManager.ActiveMods.Any(mod => mod.id == "Quaeledy.hunterexpansion"))
+                {
+                    NSHYap.playNSHAudio(self, rnd, oracleID, textSaying, slugName, region);
+                }
+            }
+
+
+            orig(self);
+        }
+
+
+        //Here to get the ID, region, and slugcatname
+        private static void Oracle_ctor(On.Oracle.orig_ctor orig, Oracle self, AbstractPhysicalObject abstractPhysObj, Room room)
+        {
+            orig(self, abstractPhysObj, room);
+            oracleID = self.ID;
+            region = self.room.world.name;
+            slugName = self.room.world.game.StoryCharacter;
+        }
+
+
+        private static void GhostConversation_ctor(On.GhostConversation.orig_ctor orig, GhostConversation self, Conversation.ID id, Ghost ghost, DialogBox diaBox)
+        {
+            isEchoHere = true;
+            echo = ghost;
+            orig(self, id, ghost, diaBox);
+        }
+
+
+        private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
+        {
+            isEchoHere = false;
+            orig(self, manager);
+        }
+
+        //Here to get the current text
+        private static void HUD_DialogBox_NewMessage_string_float_float_int(On.HUD.DialogBox.orig_NewMessage_string_float_float_int orig, DialogBox self, string text, float xOrien, float yPos, int extra)
+        {
+            textSaying = text;
+            orig(self, text, xOrien, yPos, extra);
+        }
+
+
+        private static void SLOracleBehaviorHasMark_Update(On.SLOracleBehaviorHasMark.orig_Update orig, SLOracleBehaviorHasMark self, bool wh)
+        {
+            moon = self;
+            orig(self, wh);
+        }
+
 
         private static void Watcher_SpinningTop_SpinningTopConversation_Update(ILContext il)
         {
