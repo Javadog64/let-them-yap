@@ -16,7 +16,7 @@ using BepInEx;
 
 namespace LetThemYap;
 
-[BepInPlugin("javadog.iteryap", "Let Them Yap", "1.2.1")]
+[BepInPlugin("javadog.iteryap", "Let Them Yap", "1.2.2")]
 public partial class LetThemYap : BaseUnityPlugin
 {
     private void OnEnable()

@@ -119,6 +119,7 @@ namespace LetThemYap
             On.RainWorldGame.ctor += RainWorldGame_ctor;
             On.HUD.DialogBox.NewMessage_string_float_float_int += HUD_DialogBox_NewMessage_string_float_float_int;
             On.SLOracleBehaviorHasMark.Update += SLOracleBehaviorHasMark_Update;
+            On.SLOracleBehaviorHasMark.MoonConversation.ctor += MoonConversation_ctor;
             IL.Watcher.SpinningTop.SpinningTopConversation.Update += Watcher_SpinningTop_SpinningTopConversation_Update;
 
 
@@ -238,6 +239,7 @@ namespace LetThemYap
         private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
         {
             isEchoHere = false;
+            oracleID = null;
             orig(self, manager);
         }
 
@@ -253,6 +255,14 @@ namespace LetThemYap
         {
             moon = self;
             orig(self, wh);
+        }
+
+
+        private static void MoonConversation_ctor(On.SLOracleBehaviorHasMark.MoonConversation.orig_ctor orig, SLOracleBehaviorHasMark.MoonConversation self, Conversation.ID id, OracleBehavior slOracleBehaviorHasMark, SLOracleBehaviorHasMark.MiscItemType describeItem)
+        {
+            orig(self, id, slOracleBehaviorHasMark, describeItem);
+            oracleID = slOracleBehaviorHasMark.oracle.ID;
+            moon = new SLOracleBehaviorHasMark(slOracleBehaviorHasMark.oracle);
         }
 
 
