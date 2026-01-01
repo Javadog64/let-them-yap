@@ -115,7 +115,7 @@ namespace LetThemYap
 
             On.HUD.DialogBox.InitNextMessage += HUD_DialogBox_InitNextMessage;
             On.Oracle.ctor += Oracle_ctor;
-            On.GhostConversation.ctor += GhostConversation_ctor;
+            On.Ghost.ctor += Ghost_ctor;
             On.RainWorldGame.ctor += RainWorldGame_ctor;
             On.HUD.DialogBox.NewMessage_string_float_float_int += HUD_DialogBox_NewMessage_string_float_float_int;
             On.SLOracleBehaviorHasMark.Update += SLOracleBehaviorHasMark_Update;
@@ -228,13 +228,12 @@ namespace LetThemYap
         }
 
 
-        private static void GhostConversation_ctor(On.GhostConversation.orig_ctor orig, GhostConversation self, Conversation.ID id, Ghost ghost, DialogBox diaBox)
+        private static void Ghost_ctor(On.Ghost.orig_ctor orig, Ghost self, Room room, PlacedObject placedObject, GhostWorldPresence worldGhost)
         {
             isEchoHere = true;
-            echo = ghost;
-            orig(self, id, ghost, diaBox);
+            echo = self;
+            orig(self, room, placedObject, worldGhost);
         }
-
 
         private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
         {
